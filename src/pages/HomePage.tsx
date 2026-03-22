@@ -1,22 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Icon from '@/components/ui/icon';
 import VoiceOrb from '@/components/VoiceOrb';
+import { VoiceEngine } from '@/lib/voiceEngine';
 
 export default function HomePage() {
   const [listening, setListening] = useState(false);
-  const [status, setStatus] = useState('Готов к работе');
+  const [status, setStatus] = useState('Готов к работе, сэр');
+  const [lastResponse, setLastResponse] = useState('');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const engineRef = useRef<VoiceEngine | null>(null);
+
+  const handleResult = useCallback((result: { text: string; response: string }) => {
+    setStatus(`"${result.text}"`);
+    setLastResponse(result.response);
+    setTimeout(() => setStatus('Готов к работе, сэр'), 5000);
+  }, []);
+
+  useEffect(() => {
+    engineRef.current = new VoiceEngine(handleResult, setListening);
+    const onOnline = () => setIsOnline(true);
+    const onOffline = () => setIsOnline(false);
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+    };
+  }, [handleResult]);
 
   const toggle = () => {
-    const next = !listening;
-    setListening(next);
-    setStatus(next ? 'Слушаю...' : 'Готов к работе');
+    engineRef.current?.toggle();
   };
 
   const features = [
-    { icon: 'Zap', title: 'Мгновенный отклик', desc: 'Обработка голоса за <200мс', color: '#4f9cf9' },
-    { icon: 'Brain', title: 'GPT-интеллект', desc: 'Понимает контекст разговора', color: '#a259ff' },
-    { icon: 'Shield', title: 'Приватность', desc: 'Данные хранятся локально', color: '#00d4ff' },
-    { icon: 'Cpu', title: 'Системные команды', desc: 'Управление ПК голосом', color: '#ff6b9d' },
+    { icon: 'Wifi', title: isOnline ? 'Онлайн' : 'Офлайн', desc: isOnline ? 'GPT доступен' : 'Локальный режим', color: isOnline ? '#10b981' : '#f59e0b' },
+    { icon: 'Brain', title: 'JARVIS команды', desc: '20+ команд без сети', color: '#a259ff' },
+    { icon: 'Volume2', title: 'Голосовые ответы', desc: 'Синтез речи на устройстве', color: '#00d4ff' },
+    { icon: 'Cpu', title: 'Web Speech API', desc: 'Распознавание офлайн', color: '#ff6b9d' },
   ];
 
   return (
@@ -28,8 +48,10 @@ export default function HomePage() {
 
         <div className="relative z-10 flex flex-col items-center gap-6 animate-fade-in">
           <div className="flex items-center gap-3 glass px-4 py-2 rounded-full">
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-sm text-white/60 font-mono">NOVA v1.0</span>
+            <div className={`w-2 h-2 rounded-full animate-pulse ${isOnline ? 'bg-green-400' : 'bg-yellow-400'}`} />
+            <span className="text-sm text-white/60 font-mono">
+              NOVA v1.0 · {isOnline ? 'ONLINE' : 'OFFLINE'}
+            </span>
           </div>
 
           <h1 className="text-5xl font-black text-center leading-tight">
@@ -38,19 +60,26 @@ export default function HomePage() {
             <span className="text-white">Ассистент</span>
           </h1>
           <p className="text-white/40 text-center max-w-md text-sm leading-relaxed px-4">
-            Управляй компьютером, создавай алгоритмы и получай умные ответы
-            силой своего голоса
+            Работает без интернета — голос, команды и ответы
+            полностью на вашем устройстве
           </p>
 
           <div className="my-6 animate-float" onClick={toggle}>
             <VoiceOrb active={listening} />
           </div>
 
-          <div className="glass px-6 py-2 rounded-full">
+          <div className="glass px-6 py-2 rounded-full max-w-xs text-center">
             <span className="text-sm font-mono" style={{ color: listening ? '#00d4ff' : '#4f9cf9' }}>
-              {status}
+              {listening ? 'Слушаю...' : status}
             </span>
           </div>
+
+          {lastResponse && !listening && (
+            <div className="glass px-4 py-3 rounded-2xl max-w-xs text-center animate-fade-in"
+              style={{ border: '1px solid rgba(162,89,255,0.2)' }}>
+              <span className="text-xs text-white/60 italic leading-relaxed">{lastResponse}</span>
+            </div>
+          )}
 
           <button
             onClick={toggle}
@@ -62,7 +91,10 @@ export default function HomePage() {
               boxShadow: '0 8px 30px rgba(79,156,249,0.3)',
             }}
           >
-            {listening ? 'Остановить' : 'Начать слушать'}
+            <span className="flex items-center gap-2">
+              <Icon name={listening ? 'MicOff' : 'Mic'} size={16} />
+              {listening ? 'Остановить' : 'Начать слушать'}
+            </span>
           </button>
         </div>
       </div>
