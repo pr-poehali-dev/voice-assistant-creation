@@ -3,20 +3,28 @@ import Icon from '@/components/ui/icon';
 export default function CommandsPage() {
   const categories = [
     {
-      label: 'Системные', color: '#4f9cf9', icon: 'Monitor',
-      commands: ['Открой браузер', 'Выключи компьютер', 'Сделай скриншот', 'Покажи рабочий стол'],
+      label: 'Броня & Системы', color: '#4f9cf9', icon: 'Shield',
+      commands: ['Активировать броню', 'Режим боевой готовности', 'Диагностика систем', 'Запустить реактор'],
     },
     {
-      label: 'Медиа', color: '#a259ff', icon: 'Music',
-      commands: ['Воспроизведи музыку', 'Следующий трек', 'Увеличь громкость', 'Пауза'],
+      label: 'Анализ & Сканирование', color: '#a259ff', icon: 'ScanLine',
+      commands: ['Сканировать угрозы', 'Анализ противника', 'Карта местности', 'Идентифицировать цель'],
     },
     {
-      label: 'Алгоритмы', color: '#00d4ff', icon: 'GitBranch',
-      commands: ['Запусти алгоритм #1', 'Создай новый сценарий', 'Повтори последнее', 'Запланируй задачу'],
+      label: 'Навигация & Полёт', color: '#00d4ff', icon: 'Navigation',
+      commands: ['Проложить маршрут', 'Взлётный режим', 'Максимальная скорость', 'Посадка разрешена'],
     },
     {
-      label: 'Напоминания', color: '#ff6b9d', icon: 'Bell',
-      commands: ['Напомни через 10 минут', 'Встреча в 15:00', 'Задача на завтра', 'Список дел'],
+      label: 'Коммуникация', color: '#ff6b9d', icon: 'Radio',
+      commands: ['Связь с Пеппер', 'Зашифровать канал', 'Экстренный сигнал', 'Конференц-режим'],
+    },
+    {
+      label: 'Энергия & Оружие', color: '#f59e0b', icon: 'Zap',
+      commands: ['Заряд репульсоров', 'Протон-пушка готова', 'Режим экономии', 'Перегрузка систем'],
+    },
+    {
+      label: 'Безопасность', color: '#10b981', icon: 'Lock',
+      commands: ['Протокол Бастион', 'Самоуничтожение', 'Скрыть местоположение', 'Защитный купол'],
     },
   ];
 
@@ -25,7 +33,7 @@ export default function CommandsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold text-white">Команды</h2>
-          <p className="text-white/40 text-sm">24 активных команды</p>
+          <p className="text-white/40 text-sm">24 команды JARVIS</p>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white"
           style={{ background: 'linear-gradient(135deg, #4f9cf9, #a259ff)' }}>
